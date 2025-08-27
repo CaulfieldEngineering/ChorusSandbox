@@ -2,9 +2,6 @@
 
 #include "PluginProcessor.h"
 
-// Forward declarations
-class juce::AudioProcessorValueTreeState;
-
 namespace audio_plugin {
 
     // ============================================================================
