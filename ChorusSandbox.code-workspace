@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../WizardOne"
+		},
+		{
+			"path": "../NewPluginTemplate"
+		}
+	],
+	"settings": {}
+}

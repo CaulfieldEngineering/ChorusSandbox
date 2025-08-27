@@ -11,7 +11,8 @@ namespace audio_plugin {
     #endif
                 .withOutput("Output", juce::AudioChannelSet::stereo(), true)
     #endif
-        ) {
+        ),
+        mParameterTree(*this, nullptr, "Parameters", createParameterLayout()) {
     }
 
     AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
@@ -72,12 +73,18 @@ namespace audio_plugin {
                                                 int samplesPerBlock) {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    juce::ignoreUnused(sampleRate, samplesPerBlock);
+    juce::ignoreUnused(samplesPerBlock);
+    
+    // Prepare the chorus module
+    mChorusModule.prepare(sampleRate, getTotalNumInputChannels());
     }
 
     void AudioPluginAudioProcessor::releaseResources() {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    
+    // Clear the chorus module buffers
+    mChorusModule.clear();
     }
 
     bool AudioPluginAudioProcessor::isBusesLayoutSupported(
@@ -121,17 +128,11 @@ namespace audio_plugin {
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel) {
-        auto *channelData = buffer.getWritePointer(channel);
-        juce::ignoreUnused(channelData);
-        // ..do something to the data...
-    }
+    // Update chorus parameters from the parameter tree
+    updateChorusParameters();
+    
+    // Process audio through the chorus module
+    mChorusModule.processBlock(buffer);
     }
 
     bool AudioPluginAudioProcessor::hasEditor() const {
@@ -139,8 +140,8 @@ namespace audio_plugin {
     }
 
     juce::AudioProcessorEditor *AudioPluginAudioProcessor::createEditor() {
-    	// return new AudioPluginAudioProcessorEditor(*this);
-    	return new juce::GenericAudioProcessorEditor(*this);
+    	 return new AudioPluginAudioProcessorEditor(*this);
+    	//return new juce::GenericAudioProcessorEditor(*this);
     }
 
     void AudioPluginAudioProcessor::getStateInformation(
@@ -148,7 +149,11 @@ namespace audio_plugin {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused(destData);
+    
+    // Save the current parameter state
+    auto state = mParameterTree.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
     }
 
     void AudioPluginAudioProcessor::setStateInformation(const void *data,
@@ -156,8 +161,56 @@ namespace audio_plugin {
     // You should use this method to restore your parameters from this memory
     // block, whose contents will have been created by the getStateInformation()
     // call.
-    juce::ignoreUnused(data, sizeInBytes);
+    
+    // Restore the parameter state
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    
+    if (xmlState.get() != nullptr) {
+        if (xmlState->hasTagName(mParameterTree.state.getType())) {
+            mParameterTree.replaceState(juce::ValueTree::fromXml(*xmlState));
+        }
     }
+    }
+    // ============================================================================
+    // PARAMETER LAYOUT CREATION
+    // ============================================================================
+    juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameterLayout() {
+        std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+        
+        // Num. Voices parameter
+        params.push_back(std::make_unique<juce::AudioParameterInt>(
+            "numVoices",           // parameterID
+            "Num. Voices",         // parameter name
+            1,                     // minimum value
+            10,                    // maximum value
+            2,                     // default value
+            juce::AudioParameterIntAttributes()
+                .withLabel("voices")
+        ));
+        
+        return { params.begin(), params.end() };
+    }
+    
+    // ============================================================================
+    // PARAMETER UPDATE METHODS
+    // ============================================================================
+    
+    void AudioPluginAudioProcessor::updateChorusParameters() {
+        // Update numVoices parameter
+        auto* numVoicesParam = mParameterTree.getRawParameterValue("numVoices");
+        if (numVoicesParam != nullptr) {
+            int numVoices = static_cast<int>(numVoicesParam->load());
+            mChorusModule.setNumVoices(numVoices);
+        }
+        
+        // TODO: Add more parameter updates here as we add them
+        // - Rate
+        // - Depth  
+        // - Mix
+        // - Base Delay
+        // - etc.
+    }
+
 } // namespace audio_plugin
 
 // This creates new instances of the plugin.
