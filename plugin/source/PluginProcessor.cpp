@@ -177,6 +177,10 @@ namespace audio_plugin {
     juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameterLayout() {
         std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
         
+        // ============================================================================
+        // MAIN CONTROLS PARAMETERS
+        // ============================================================================
+        
         // Num. Voices parameter
         params.push_back(std::make_unique<juce::AudioParameterInt>(
             "numVoices",           // parameterID
@@ -188,6 +192,163 @@ namespace audio_plugin {
                 .withLabel("voices")
         ));
         
+        // Rate parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "rate",                // parameterID
+            "Rate",                // parameter name
+            juce::NormalisableRange<float>(0.1f, 2.0f, 0.01f), // range
+            1.0f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("Hz")
+        ));
+        
+        // Depth parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "depth",               // parameterID
+            "Depth",               // parameter name
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), // range
+            0.5f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("")
+        ));
+        
+        // Mix parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "mix",                 // parameterID
+            "Mix",                 // parameter name
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), // range
+            0.7f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("")
+        ));
+        
+        // Base Delay parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "baseDelay",           // parameterID
+            "Base Delay",          // parameter name
+            juce::NormalisableRange<float>(10.0f, 100.0f, 0.1f), // range
+            30.0f,                 // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("ms")
+        ));
+        
+        // Voice Attenuation parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "voiceAttenuation",    // parameterID
+            "Voice Attenuation",   // parameter name
+            juce::NormalisableRange<float>(-6.0f, 0.0f, 0.1f), // range
+            0.0f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("dB")
+        ));
+        
+        // Master Voice Level parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "masterVoiceLevel",    // parameterID
+            "Master Voice Level",  // parameter name
+            juce::NormalisableRange<float>(-20.0f, 6.0f, 0.1f), // range
+            -3.0f,                 // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("dB")
+        ));
+        
+        // Enabled parameter
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            "enabled",             // parameterID
+            "Enabled",             // parameter name
+            true,                  // default value
+            juce::AudioParameterBoolAttributes()
+        ));
+        
+        // ============================================================================
+        // STEREO SECTION PARAMETERS
+        // ============================================================================
+        
+        // Stereo Mode parameter
+        params.push_back(std::make_unique<juce::AudioParameterChoice>(
+            "stereoMode",          // parameterID
+            "Stereo Mode",         // parameter name
+            juce::StringArray{"Mono", "Stereo", "Mid-Side"}, // choices
+            0,                     // default index (Mono)
+            juce::AudioParameterChoiceAttributes()
+        ));
+        
+        // Stereo Spread parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "stereoSpread",        // parameterID
+            "Stereo Spread",       // parameter name
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), // range
+            0.5f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("")
+        ));
+        
+        // Mid Enabled parameter
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            "midEnabled",          // parameterID
+            "Mid Enabled",         // parameter name
+            true,                  // default value
+            juce::AudioParameterBoolAttributes()
+        ));
+        
+        // Side Enabled parameter
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            "sideEnabled",         // parameterID
+            "Side Enabled",        // parameter name
+            true,                  // default value
+            juce::AudioParameterBoolAttributes()
+        ));
+        
+        // Side Gain parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "sideGain",            // parameterID
+            "Side Gain",           // parameter name
+            juce::NormalisableRange<float>(-20.0f, 20.0f, 0.1f), // range
+            0.0f,                  // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("dB")
+        ));
+        
+        // ============================================================================
+        // FILTER SECTION PARAMETERS
+        // ============================================================================
+        
+        // LPF Enabled parameter
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            "lpfEnabled",          // parameterID
+            "LPF Enabled",         // parameter name
+            false,                 // default value
+            juce::AudioParameterBoolAttributes()
+        ));
+        
+        // LPF Cutoff parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "lpfCutoff",           // parameterID
+            "LPF Cutoff",          // parameter name
+            juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f), // range
+            20000.0f,              // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("Hz")
+        ));
+        
+        // HPF Enabled parameter
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            "hpfEnabled",          // parameterID
+            "HPF Enabled",         // parameter name
+            false,                 // default value
+            juce::AudioParameterBoolAttributes()
+        ));
+        
+        // HPF Cutoff parameter
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            "hpfCutoff",           // parameterID
+            "HPF Cutoff",          // parameter name
+            juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f), // range
+            20.0f,                 // default value
+            juce::AudioParameterFloatAttributes()
+                .withLabel("Hz")
+        ));
+        
         return { params.begin(), params.end() };
     }
     
@@ -196,6 +357,10 @@ namespace audio_plugin {
     // ============================================================================
     
     void AudioPluginAudioProcessor::updateChorusParameters() {
+        // ============================================================================
+        // MAIN CONTROLS PARAMETERS
+        // ============================================================================
+        
         // Update numVoices parameter
         auto* numVoicesParam = mParameterTree.getRawParameterValue("numVoices");
         if (numVoicesParam != nullptr) {
@@ -203,12 +368,127 @@ namespace audio_plugin {
             mChorusModule.setNumVoices(numVoices);
         }
         
-        // TODO: Add more parameter updates here as we add them
-        // - Rate
-        // - Depth  
-        // - Mix
-        // - Base Delay
-        // - etc.
+        // Update rate parameter
+        auto* rateParam = mParameterTree.getRawParameterValue("rate");
+        if (rateParam != nullptr) {
+            float rate = rateParam->load();
+            mChorusModule.setRate(rate);
+        }
+        
+        // Update depth parameter
+        auto* depthParam = mParameterTree.getRawParameterValue("depth");
+        if (depthParam != nullptr) {
+            float depth = depthParam->load();
+            mChorusModule.setDepth(depth);
+        }
+        
+        // Update mix parameter
+        auto* mixParam = mParameterTree.getRawParameterValue("mix");
+        if (mixParam != nullptr) {
+            float mix = mixParam->load();
+            mChorusModule.setMix(mix);
+        }
+        
+        // Update baseDelay parameter
+        auto* baseDelayParam = mParameterTree.getRawParameterValue("baseDelay");
+        if (baseDelayParam != nullptr) {
+            float baseDelay = baseDelayParam->load();
+            mChorusModule.setBaseDelay(baseDelay);
+        }
+        
+        // Update voiceAttenuation parameter
+        auto* voiceAttenuationParam = mParameterTree.getRawParameterValue("voiceAttenuation");
+        if (voiceAttenuationParam != nullptr) {
+            float voiceAttenuation = voiceAttenuationParam->load();
+            mChorusModule.setVoiceAttenuation(voiceAttenuation);
+        }
+        
+        // Update masterVoiceLevel parameter
+        auto* masterVoiceLevelParam = mParameterTree.getRawParameterValue("masterVoiceLevel");
+        if (masterVoiceLevelParam != nullptr) {
+            float masterVoiceLevel = masterVoiceLevelParam->load();
+            mChorusModule.setMasterVoiceLevel(masterVoiceLevel);
+        }
+        
+        // Update enabled parameter
+        auto* enabledParam = mParameterTree.getRawParameterValue("enabled");
+        if (enabledParam != nullptr) {
+            bool enabled = enabledParam->load() > 0.5f;
+            mChorusModule.setEnabled(enabled);
+        }
+        
+        // ============================================================================
+        // STEREO SECTION PARAMETERS
+        // ============================================================================
+        
+        // Update stereoMode parameter
+        auto* stereoModeParam = mParameterTree.getRawParameterValue("stereoMode");
+        if (stereoModeParam != nullptr) {
+            int stereoMode = static_cast<int>(stereoModeParam->load());
+                    // Convert to WizardCore::Chorus::PanningMode enum
+        WizardCore::Chorus::PanningMode mode = static_cast<WizardCore::Chorus::PanningMode>(stereoMode);
+            mChorusModule.setStereoMode(mode);
+        }
+        
+        // Update stereoSpread parameter
+        auto* stereoSpreadParam = mParameterTree.getRawParameterValue("stereoSpread");
+        if (stereoSpreadParam != nullptr) {
+            float stereoSpread = stereoSpreadParam->load();
+            mChorusModule.setStereoSpread(stereoSpread);
+        }
+        
+        // Update midEnabled parameter
+        auto* midEnabledParam = mParameterTree.getRawParameterValue("midEnabled");
+        if (midEnabledParam != nullptr) {
+            bool midEnabled = midEnabledParam->load() > 0.5f;
+            mChorusModule.setMidEnabled(midEnabled);
+        }
+        
+        // Update sideEnabled parameter
+        auto* sideEnabledParam = mParameterTree.getRawParameterValue("sideEnabled");
+        if (sideEnabledParam != nullptr) {
+            bool sideEnabled = sideEnabledParam->load() > 0.5f;
+            mChorusModule.setSideEnabled(sideEnabled);
+        }
+        
+        // Update sideGain parameter
+        auto* sideGainParam = mParameterTree.getRawParameterValue("sideGain");
+        if (sideGainParam != nullptr) {
+            float sideGain = sideGainParam->load();
+            mChorusModule.setSideGain(sideGain);
+        }
+        
+        // ============================================================================
+        // FILTER SECTION PARAMETERS
+        // ============================================================================
+        
+        // Update lpfEnabled parameter
+        auto* lpfEnabledParam = mParameterTree.getRawParameterValue("lpfEnabled");
+        if (lpfEnabledParam != nullptr) {
+            bool lpfEnabled = lpfEnabledParam->load() > 0.5f;
+            mChorusModule.setLPFEnabled(lpfEnabled);
+        }
+        
+        // Update lpfCutoff parameter
+        auto* lpfCutoffParam = mParameterTree.getRawParameterValue("lpfCutoff");
+        if (lpfCutoffParam != nullptr) {
+            float lpfCutoff = lpfCutoffParam->load();
+            mChorusModule.setLPFCutoff(lpfCutoff);
+        }
+        
+        // Update hpfEnabled parameter
+        auto* hpfEnabledParam = mParameterTree.getRawParameterValue("hpfEnabled");
+        if (hpfEnabledParam != nullptr) {
+            bool hpfEnabled = hpfEnabledParam->load() > 0.5f;
+            mChorusModule.setHPFEnabled(hpfEnabled);
+        }
+        
+        // Update hpfCutoff parameter
+        auto* hpfCutoffParam = mParameterTree.getRawParameterValue("hpfCutoff");
+        if (hpfCutoffParam != nullptr) {
+            float hpfCutoff = hpfCutoffParam->load();
+            mChorusModule.setHPFCutoff(hpfCutoff);
+        }
     }
 
 } // namespace audio_plugin

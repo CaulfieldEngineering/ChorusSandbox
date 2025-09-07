@@ -104,6 +104,15 @@ CPMAddPackage(
     SOURCE_DIR ${LIB_DIR}/juce
 )
 
+# This downloads the WizardOne audio modules repository for automatic access.
+# =====================================================================
+CPMAddPackage(
+    NAME WizardOne
+    GIT_TAG staging
+    GITHUB_REPOSITORY CaulfieldEngineering/WizardOne
+    SOURCE_DIR ${LIB_DIR}/wizardone
+)
+
 # Adds googletest.
 # =====================================================================
 # CPMAddPackage(
