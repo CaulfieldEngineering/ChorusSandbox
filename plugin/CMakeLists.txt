@@ -150,13 +150,13 @@ source_group("JUCE Modules" FILES ${ALL_JUCE_FILES})
 # This programmatically organizes all WizardCore module files into a clean folder structure
 # in Visual Studio, regardless of how many modules exist or are added in the future
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardone/plugin/source")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardcore/plugin/source")
     # Get all WizardCore source files (.cpp, .h)
     file(GLOB_RECURSE WIZARDCORE_CPP_FILES 
-        "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardone/plugin/source/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardcore/plugin/source/*.cpp"
     )
     file(GLOB_RECURSE WIZARDCORE_H_FILES 
-        "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardone/plugin/source/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardcore/plugin/source/*.h"
     )
     
     # Combine all WizardCore files
@@ -164,9 +164,9 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardone/plugin/source")
     
     # Create organized source groups for each WizardCore module
     foreach(WIZARDCORE_FILE ${ALL_WIZARDCORE_FILES})
-        # Get the relative path from the WizardOne source directory
+        # Get the relative path from the WizardCore source directory
         file(RELATIVE_PATH REL_PATH 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardone/plugin/source" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../libs/wizardcore/plugin/source" 
             "${WIZARDCORE_FILE}"
         )
         
