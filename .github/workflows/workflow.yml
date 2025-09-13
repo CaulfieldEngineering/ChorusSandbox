@@ -767,11 +767,11 @@ jobs:
       id: check_ssh
       shell: bash
       run: |
-        if [ -n "${{ secrets.SSH_ID }}" ]; then
-          echo "ssh_available=true" >> $GITHUB_OUTPUT
-        else
+        if [ -z "${{ secrets.SSH_ID }}" ] || [ "${{ secrets.SSH_ID }}" = "SKIP" ]; then
           echo "ssh_available=false" >> $GITHUB_OUTPUT
-          echo "SSH credentials not set. Skipping SSH-related steps."
+          echo "SSH credentials not set or set to SKIP. Skipping SSH-related steps."
+        else
+          echo "ssh_available=true" >> $GITHUB_OUTPUT
         fi
 
 
