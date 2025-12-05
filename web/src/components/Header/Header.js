@@ -16,7 +16,7 @@ function Header() {
   const [imageError, setImageError] = useState(false);
   
   // Screenshot path includes version number: screenshot_x.x.x.png
-  const screenshotPath = `${process.env.PUBLIC_URL}/images/screenshot_${version}.png`;
+  const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png`;
   
   return (
     <header className={styles.container}>

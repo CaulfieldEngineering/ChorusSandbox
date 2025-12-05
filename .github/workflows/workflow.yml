@@ -239,10 +239,10 @@ jobs:
         Write-Host "Capturing plugin screenshot..."
         
         $exePath = "${{github.workspace}}\build\plugin\${{ env.REPOSITORY_NAME }}_artefacts\Release\Standalone\${{ env.REPOSITORY_NAME }}.exe"
-        $screenshotDir = "${{github.workspace}}\web\public\images"
+        $screenshotDir = "${{github.workspace}}\web\public\screenshots"
         $screenshotPath = "$screenshotDir\screenshot_${{ env.wPROJECT_VERSION }}.png"
         
-        # Create images directory
+        # Create screenshots directory
         New-Item -ItemType Directory -Force -Path $screenshotDir | Out-Null
         
         Write-Host "Looking for: $exePath"
@@ -261,65 +261,25 @@ jobs:
           Add-Type -AssemblyName System.Windows.Forms
           Add-Type -AssemblyName System.Drawing
           
-          # Try to find and capture the window
           try {
             $proc = Get-Process -Id $process.Id -ErrorAction SilentlyContinue
             if ($proc -and $proc.MainWindowHandle -ne 0) {
               Write-Host "Found window handle: $($proc.MainWindowHandle)"
               
-              # Get window rectangle
-              Add-Type @"
-                using System;
-                using System.Runtime.InteropServices;
-                public class Win32 {
-                  [DllImport("user32.dll")]
-                  public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-                  
-                  [DllImport("user32.dll")]
-                  public static extern bool SetForegroundWindow(IntPtr hWnd);
-                  
-                  [StructLayout(LayoutKind.Sequential)]
-                  public struct RECT {
-                    public int Left, Top, Right, Bottom;
-                  }
-                }
-"@
+              # Capture entire screen
+              $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+              $bitmap = New-Object System.Drawing.Bitmap($screen.Bounds.Width, $screen.Bounds.Height)
+              $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+              $graphics.CopyFromScreen($screen.Bounds.Location, [System.Drawing.Point]::Empty, $screen.Bounds.Size)
               
-              # Bring window to foreground
-              [Win32]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
-              Start-Sleep -Milliseconds 500
+              # Save full screenshot
+              $bitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
+              Write-Host "Screenshot saved to: $screenshotPath"
               
-              # Get window bounds
-              $rect = New-Object Win32+RECT
-              [Win32]::GetWindowRect($proc.MainWindowHandle, [ref]$rect) | Out-Null
-              
-              $width = $rect.Right - $rect.Left
-              $height = $rect.Bottom - $rect.Top
-              
-              Write-Host "Window size: ${width}x${height}"
-              
-              if ($width -gt 0 -and $height -gt 0) {
-                # Capture the window area
-                $bitmap = New-Object System.Drawing.Bitmap($width, $height)
-                $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-                $graphics.CopyFromScreen($rect.Left, $rect.Top, 0, 0, $bitmap.Size)
-                
-                # Crop out title bar (approximately 30 pixels on Windows)
-                $cropTop = 31
-                $croppedHeight = $height - $cropTop
-                $croppedBitmap = New-Object System.Drawing.Bitmap($width, $croppedHeight)
-                $croppedGraphics = [System.Drawing.Graphics]::FromImage($croppedBitmap)
-                $croppedGraphics.DrawImage($bitmap, 0, 0, (New-Object System.Drawing.Rectangle(0, $cropTop, $width, $croppedHeight)), [System.Drawing.GraphicsUnit]::Pixel)
-                
-                # Save screenshot
-                $croppedBitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
-                Write-Host "Screenshot saved to: $screenshotPath"
-                
-                $croppedGraphics.Dispose()
-                $croppedBitmap.Dispose()
-                $graphics.Dispose()
-                $bitmap.Dispose()
-              }
+              $graphics.Dispose()
+              $bitmap.Dispose()
+            } else {
+              Write-Host "Window handle not found"
             }
           } catch {
             Write-Host "Error capturing screenshot: $_"
@@ -329,10 +289,10 @@ jobs:
           Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
           
           if (Test-Path $screenshotPath) {
-            Write-Host "✓ Screenshot captured successfully"
+            Write-Host "Screenshot captured successfully"
             Get-Item $screenshotPath
           } else {
-            Write-Host "⚠ Screenshot capture failed"
+            Write-Host "Screenshot capture failed"
           }
         } else {
           Write-Host "Could not find standalone executable at: $exePath"
@@ -348,7 +308,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: plugin-screenshot
-        path: web/public/images/screenshot_*.png
+        path: web/public/screenshots/screenshot_*.png
         if-no-files-found: ignore
 
 
@@ -1391,7 +1351,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: plugin-screenshot
-        path: web/public/images/
+        path: web/public/screenshots/
       continue-on-error: true
 
 
