@@ -219,9 +219,6 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
 
 
-    # Note: Automated screenshot capture not supported on headless CI runners.
-    # To add a screenshot, manually place screenshot.png in web/public/images/
-    # and commit it to the repository.
 
 
     # Production Testing
@@ -229,6 +226,130 @@ jobs:
     - name: Run Tests
       run: |
         echo "TODO: Insert test runner here"
+
+
+    # Capture Plugin Screenshot (Windows Only)
+    # ==========================================================================================
+    - name: Capture Plugin Screenshot
+      if: matrix.os == 'windows-latest'
+      env:
+        REPOSITORY_NAME: ${{ github.event.repository.name }}
+      shell: pwsh
+      run: |
+        Write-Host "Capturing plugin screenshot..."
+        
+        $exePath = "${{github.workspace}}\build\plugin\${{ env.REPOSITORY_NAME }}_artefacts\Release\Standalone\${{ env.REPOSITORY_NAME }}.exe"
+        $screenshotDir = "${{github.workspace}}\web\public\images"
+        $screenshotPath = "$screenshotDir\screenshot_${{ env.wPROJECT_VERSION }}.png"
+        
+        # Create images directory
+        New-Item -ItemType Directory -Force -Path $screenshotDir | Out-Null
+        
+        Write-Host "Looking for: $exePath"
+        
+        if (Test-Path $exePath) {
+          Write-Host "Found standalone executable"
+          
+          # Start the application
+          Write-Host "Launching standalone..."
+          $process = Start-Process -FilePath $exePath -PassThru
+          
+          # Wait for window to appear and render
+          Start-Sleep -Seconds 5
+          
+          # Use .NET to capture screenshot
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          
+          # Try to find and capture the window
+          try {
+            $proc = Get-Process -Id $process.Id -ErrorAction SilentlyContinue
+            if ($proc -and $proc.MainWindowHandle -ne 0) {
+              Write-Host "Found window handle: $($proc.MainWindowHandle)"
+              
+              # Get window rectangle
+              Add-Type @"
+                using System;
+                using System.Runtime.InteropServices;
+                public class Win32 {
+                  [DllImport("user32.dll")]
+                  public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+                  
+                  [DllImport("user32.dll")]
+                  public static extern bool SetForegroundWindow(IntPtr hWnd);
+                  
+                  [StructLayout(LayoutKind.Sequential)]
+                  public struct RECT {
+                    public int Left, Top, Right, Bottom;
+                  }
+                }
+"@
+              
+              # Bring window to foreground
+              [Win32]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+              Start-Sleep -Milliseconds 500
+              
+              # Get window bounds
+              $rect = New-Object Win32+RECT
+              [Win32]::GetWindowRect($proc.MainWindowHandle, [ref]$rect) | Out-Null
+              
+              $width = $rect.Right - $rect.Left
+              $height = $rect.Bottom - $rect.Top
+              
+              Write-Host "Window size: ${width}x${height}"
+              
+              if ($width -gt 0 -and $height -gt 0) {
+                # Capture the window area
+                $bitmap = New-Object System.Drawing.Bitmap($width, $height)
+                $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+                $graphics.CopyFromScreen($rect.Left, $rect.Top, 0, 0, $bitmap.Size)
+                
+                # Crop out title bar (approximately 30 pixels on Windows)
+                $cropTop = 31
+                $croppedHeight = $height - $cropTop
+                $croppedBitmap = New-Object System.Drawing.Bitmap($width, $croppedHeight)
+                $croppedGraphics = [System.Drawing.Graphics]::FromImage($croppedBitmap)
+                $croppedGraphics.DrawImage($bitmap, 0, 0, (New-Object System.Drawing.Rectangle(0, $cropTop, $width, $croppedHeight)), [System.Drawing.GraphicsUnit]::Pixel)
+                
+                # Save screenshot
+                $croppedBitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
+                Write-Host "Screenshot saved to: $screenshotPath"
+                
+                $croppedGraphics.Dispose()
+                $croppedBitmap.Dispose()
+                $graphics.Dispose()
+                $bitmap.Dispose()
+              }
+            }
+          } catch {
+            Write-Host "Error capturing screenshot: $_"
+          }
+          
+          # Stop the process
+          Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+          
+          if (Test-Path $screenshotPath) {
+            Write-Host "✓ Screenshot captured successfully"
+            Get-Item $screenshotPath
+          } else {
+            Write-Host "⚠ Screenshot capture failed"
+          }
+        } else {
+          Write-Host "Could not find standalone executable at: $exePath"
+          Get-ChildItem -Path "${{github.workspace}}\build\plugin" -Recurse -Filter "*.exe" | ForEach-Object { Write-Host $_.FullName }
+        }
+      continue-on-error: true
+
+
+    # Upload Screenshot Artifact (Windows Only)
+    # ==========================================================================================
+    - name: Upload Screenshot Artifact
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: plugin-screenshot
+        path: web/public/images/screenshot_*.png
+        if-no-files-found: ignore
 
 
     # Debug; print project variables - All Cases
@@ -1262,6 +1383,16 @@ jobs:
           echo "$key=$value" >> $GITHUB_ENV
         done < <(grep 'set(w' ${GITHUB_WORKSPACE}/config.cmake | sed -e 's/set(//g' -e 's/)//g' -e 's/\s\+/ /g')
       shell: bash
+
+
+    # Download Screenshot Artifact (if available)
+    # ==========================================================================================
+    - name: Download Screenshot Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: plugin-screenshot
+        path: web/public/images/
+      continue-on-error: true
 
 
     # Setup Node.js
