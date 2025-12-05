@@ -833,7 +833,7 @@ jobs:
         ssh -vvv CaulfieldEngineering.com exit
 
 
-    # Upload Installers to Server (SCP) - All Cases
+    # Upload Installers to (SCP) - All Cases
     # ==========================================================================================
     - name: Upload Installers to Server (SCP)
       if: steps.check_ssh.outputs.ssh_available == 'true'
@@ -1173,3 +1173,199 @@ jobs:
         # Delete the tag itself
         echo "Deleting tag: $TAG_NAME"
         gh api -X DELETE repos/${GITHUB_REPOSITORY}/git/refs/tags/$TAG_NAME
+
+
+  # Job: Build & Deploy Web Documentation
+  # Runs AFTER build jobs complete to access version info and installer filenames
+  # ==========================================================================================
+  deploy-web:
+    needs: build  # Wait for all build matrix jobs to complete
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout Code
+    # ==========================================================================================
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+
+    # Gather project variables from config.cmake
+    # ==========================================================================================
+    - name: Extract and Set Configuration Variables
+      run: |
+        echo "Reading configuration from config.cmake..."
+        while IFS=' ' read -r key value
+        do
+          value=$(echo $value | tr -d '"')  # Remove quotes
+          echo "$key=$value" >> $GITHUB_ENV
+        done < <(grep 'set(w' ${GITHUB_WORKSPACE}/config.cmake | sed -e 's/set(//g' -e 's/)//g' -e 's/\s\+/ /g')
+      shell: bash
+
+
+    # Setup Node.js
+    # ==========================================================================================
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: web/package-lock.json
+
+
+    # Install Dependencies
+    # ==========================================================================================
+    - name: Install Dependencies
+      working-directory: web
+      run: npm ci
+
+
+    # Generate Build Configuration for React App
+    # Passes version info and installer URLs to the web build
+    # ==========================================================================================
+    - name: Generate Build Configuration
+      env:
+        REPOSITORY_NAME: ${{ github.event.repository.name }}
+      run: |
+        REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}')
+        
+        # Create a config file that React can import
+        cat > web/src/config/buildConfig.json << EOF
+        {
+          "version": "${wPROJECT_VERSION}",
+          "pluginName": "${wPLUGIN_NAME}",
+          "companyName": "${wCOMPANY_NAME}",
+          "repositoryName": "${REPO_NAME}",
+          "buildDate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "isTaggedRelease": ${{ startsWith(github.ref, 'refs/tags/v') }},
+          "installers": {
+            "mac": "${REPO_NAME}MacInstaller_${wPROJECT_VERSION}.pkg",
+            "windows": "${REPO_NAME}WinInstaller_${wPROJECT_VERSION}.exe"
+          },
+          "downloadBaseUrl": "https://caulfieldengineering.com/plug-ins/${REPO_NAME}/uploads"
+        }
+        EOF
+        
+        echo "Generated build configuration:"
+        cat web/src/config/buildConfig.json
+      shell: bash
+
+
+    # Build React Application
+    # ==========================================================================================
+    - name: Build React Application
+      working-directory: web
+      run: npm run build
+
+
+    # Upload Build Artifact
+    # ==========================================================================================
+    - name: Upload Web Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: web/build/
+
+
+    # Check SSH Credentials Available
+    # ==========================================================================================
+    - name: Check SSH Credentials
+      id: check_ssh
+      shell: bash
+      run: |
+        if [ -z "${{ secrets.SSH_ID }}" ] || [ "${{ secrets.SSH_ID }}" = "SKIP" ]; then
+          echo "ssh_available=false" >> $GITHUB_OUTPUT
+          echo "SSH credentials not set or set to SKIP. Skipping SSH-related steps."
+        else
+          echo "ssh_available=true" >> $GITHUB_OUTPUT
+        fi
+
+
+    # Setup SSH for Server Upload
+    # ==========================================================================================
+    - name: Setup SSH
+      if: steps.check_ssh.outputs.ssh_available == 'true'
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_ID }}
+
+
+    # Add Host Key
+    # ==========================================================================================
+    - name: Add Host Key
+      if: steps.check_ssh.outputs.ssh_available == 'true'
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -p 7822 CaulfieldEngineering.com >> ~/.ssh/known_hosts
+
+
+    # Create SSH Config
+    # ==========================================================================================
+    - name: Create SSH Config
+      if: steps.check_ssh.outputs.ssh_available == 'true'
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "Host CaulfieldEngineering.com
+          HostName CaulfieldEngineering.com
+          User caulfiel
+          Port 7822
+          MACs hmac-sha2-256
+          StrictHostKeyChecking no" > ~/.ssh/config
+
+
+    # Upload Web Build to Server (SCP)
+    # ==========================================================================================
+    - name: Upload Web Build to Server (SCP)
+      if: steps.check_ssh.outputs.ssh_available == 'true'
+      env:
+        REPOSITORY_NAME: ${{ github.event.repository.name }}
+      shell: bash
+      run: |
+        set -e  # Exit immediately if any command exits with a non-zero status
+
+        echo "SSH credentials available. Starting web build upload..."
+
+        REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}')
+        echo "REPO_NAME set to: $REPO_NAME"
+
+        # Set destination path (same root as binary uploads, in 'web' subdirectory)
+        DEST_PATH="/home/caulfiel/public_html/plug-ins/${REPO_NAME}/web/"
+        SERVER="CaulfieldEngineering.com"
+
+        echo "Checking if destination directory exists on the server..."
+        if ssh $SERVER "test -d $DEST_PATH"; then
+          echo "Directory exists: $DEST_PATH"
+          echo "Clearing existing web content..."
+          ssh $SERVER "rm -rf ${DEST_PATH}*"
+        else
+          echo "Directory does not exist, creating directory: $DEST_PATH"
+          if ssh $SERVER "mkdir -p $DEST_PATH"; then
+            echo "Directory created successfully"
+          else
+            echo "Failed to create directory: $DEST_PATH"
+            exit 1
+          fi
+        fi
+
+        echo "Verifying build directory exists..."
+        if [ -d "${GITHUB_WORKSPACE}/web/build" ]; then
+          echo "✓ Build directory exists"
+        else
+          echo "ERROR: Build directory does not exist"
+          ls -la ${GITHUB_WORKSPACE}/web/
+          exit 1
+        fi
+
+        echo "Beginning SCP Transfer..."
+        echo "Source: ${GITHUB_WORKSPACE}/web/build/"
+        echo "Destination: $SERVER:$DEST_PATH"
+
+        # Upload all build contents recursively
+        if scp -r ${GITHUB_WORKSPACE}/web/build/* "$SERVER:$DEST_PATH"; then
+          echo "✓ SCP transfer completed successfully"
+        else
+          echo "ERROR: SCP transfer failed with exit code $?"
+          exit 1
+        fi
+
+        echo "Web documentation deployed to: https://caulfieldengineering.com/plug-ins/${REPO_NAME}/web/"

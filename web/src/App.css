@@ -1,0 +1,26 @@
+/* ============================================================================
+   APP COMPONENT STYLES
+   ============================================================================ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app__main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Subtle radial gradient background for depth */
+  background: 
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(233, 69, 96, 0.15) 0%,
+      transparent 50%
+    ),
+    var(--color-bg-primary);
+}
+

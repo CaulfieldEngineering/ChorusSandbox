@@ -1,3 +1,37 @@
 build/
 libs/
 plugin/sourceListResult.cmake
+
+# ============================================================================
+# WEB APPLICATION (React)
+# ============================================================================
+
+# Dependencies
+web/node_modules/
+
+# Build output
+web/build/
+
+# Environment files (may contain secrets)
+web/.env
+web/.env.local
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+
+# Testing & coverage
+web/coverage/
+
+# Debug logs
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+
+# Editor/IDE
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Optional: uncomment if not using package-lock
+# web/package-lock.json

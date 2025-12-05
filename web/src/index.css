@@ -1,0 +1,42 @@
+/* ============================================================================
+   GLOBAL STYLES
+   ============================================================================ */
+
+/* CSS Variables for theming */
+:root {
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-accent: #e94560;
+  --color-text-primary: #eaeaea;
+  --color-text-secondary: #a0a0a0;
+  --font-family-display: 'Playfair Display', Georgia, serif;
+  --font-family-body: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Reset & Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+}
+

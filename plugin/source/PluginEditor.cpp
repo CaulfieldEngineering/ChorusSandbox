@@ -8,7 +8,7 @@ namespace audio_plugin {
     juce::ignoreUnused(processorRef);
         // Make sure that before the constructor has finished, you've set the
         // editor's size to whatever you need it to be.
-        setSize(600, 500);
+        setSize(600, 1025);
     setResizable(true, true);
         
         // Setup UI components
@@ -28,6 +28,9 @@ namespace audio_plugin {
         makeMidEnabledControl();
         makeSideEnabledControl();
         makeSideGainControl();
+        
+
+
         
         makeLPFEnabledControl();
         makeLPFCutoffControl();
