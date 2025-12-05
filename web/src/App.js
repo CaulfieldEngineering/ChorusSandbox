@@ -16,7 +16,7 @@ import './App.css';
 function App() {
   // Set document title to plugin name
   useEffect(() => {
-    document.title = `${config.pluginName} - ${config.companyName}`;
+    document.title = config.pluginName;
   }, []);
 
   return (
