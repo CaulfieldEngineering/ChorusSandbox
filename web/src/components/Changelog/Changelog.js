@@ -57,6 +57,28 @@ function formatDate(dateStr) {
 }
 
 /**
+ * Version Screenshot Component
+ * Displays a smaller screenshot for the version, hidden if image doesn't exist
+ */
+function VersionScreenshot({ version }) {
+  const [imageError, setImageError] = useState(false);
+  const screenshotPath = `${process.env.PUBLIC_URL}/images/screenshot_${version}.png`;
+  
+  if (imageError) return null;
+  
+  return (
+    <div className={styles.versionScreenshot}>
+      <img 
+        src={screenshotPath}
+        alt={`Version ${version} screenshot`}
+        className={styles.versionScreenshotImg}
+        onError={() => setImageError(true)}
+      />
+    </div>
+  );
+}
+
+/**
  * Single version entry component
  */
 function VersionEntry({ version, date, sections, isLatest }) {
@@ -91,6 +113,9 @@ function VersionEntry({ version, date, sections, isLatest }) {
       
       {expanded && (
         <div className={styles.versionContent}>
+          {/* Screenshot for this version */}
+          <VersionScreenshot version={version} />
+          
           {/* Download links for this version */}
           <div className={styles.versionDownloads}>
             <span className={styles.downloadLabel}>Download v{version}:</span>

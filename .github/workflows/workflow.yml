@@ -52,13 +52,6 @@ jobs:
         echo "Changed files:"
         echo "$CHANGED_FILES"
         
-        # Check if screenshot exists
-        if [ ! -f "web/public/images/screenshot.png" ]; then
-          echo "Screenshot missing - need to build plugin"
-          echo "plugin=true" >> $GITHUB_OUTPUT
-          exit 0
-        fi
-        
         # Check if ONLY web/ files changed (nothing else)
         NON_WEB_CHANGES=$(echo "$CHANGED_FILES" | grep -vE '^web/' || true)
         
@@ -226,81 +219,9 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
 
 
-    # Capture Plugin Screenshot (Mac Only)
-    # ==========================================================================================
-    - name: Capture Plugin Screenshot
-      if: matrix.os == 'macos-latest'
-      env:
-        REPOSITORY_NAME: ${{ github.event.repository.name }}
-      run: |
-        echo "Capturing plugin screenshot..."
-        
-        APP_PATH="${GITHUB_WORKSPACE}/build/plugin/${REPOSITORY_NAME}_artefacts/Release/Standalone/${REPOSITORY_NAME}.app"
-        SCREENSHOT_PATH="${GITHUB_WORKSPACE}/web/public/images/screenshot.png"
-        
-        # Create images directory if it doesn't exist
-        mkdir -p "${GITHUB_WORKSPACE}/web/public/images"
-        
-        # Launch the standalone app
-        echo "Launching standalone app..."
-        open "$APP_PATH"
-        
-        # Wait for app to fully render
-        sleep 4
-        
-        # Get the window ID for the app
-        WINDOW_ID=$(osascript -e "tell application \"System Events\" to tell process \"${REPOSITORY_NAME}\" to get id of window 1" 2>/dev/null || echo "")
-        
-        if [ -z "$WINDOW_ID" ]; then
-          echo "Could not get window ID, attempting screen capture of app by name..."
-          # Fallback: capture by window name
-          screencapture -l $(osascript -e "tell application \"${REPOSITORY_NAME}\" to id of window 1" 2>/dev/null || echo "0") "$SCREENSHOT_PATH" || true
-        fi
-        
-        # Use screencapture with window selection
-        # -o flag excludes window shadow, -l captures specific window by ID
-        osascript -e "tell application \"${REPOSITORY_NAME}\" to activate"
-        sleep 1
-        
-        # Capture the frontmost window
-        screencapture -o -w "$SCREENSHOT_PATH" <<< $'\n' 2>/dev/null || \
-        screencapture -x -R0,0,800,600 "$SCREENSHOT_PATH" || true
-        
-        # Verify screenshot was captured
-        if [ -f "$SCREENSHOT_PATH" ]; then
-          echo "✓ Screenshot captured successfully"
-          
-          # Crop to remove any title bar (top 28 pixels on macOS)
-          # Using sips (built into macOS)
-          ORIGINAL_HEIGHT=$(sips -g pixelHeight "$SCREENSHOT_PATH" | tail -1 | awk '{print $2}')
-          ORIGINAL_WIDTH=$(sips -g pixelWidth "$SCREENSHOT_PATH" | tail -1 | awk '{print $2}')
-          CROP_TOP=28
-          NEW_HEIGHT=$((ORIGINAL_HEIGHT - CROP_TOP))
-          
-          echo "Cropping title bar: ${ORIGINAL_WIDTH}x${ORIGINAL_HEIGHT} -> ${ORIGINAL_WIDTH}x${NEW_HEIGHT}"
-          sips -c $NEW_HEIGHT $ORIGINAL_WIDTH "$SCREENSHOT_PATH" --out "$SCREENSHOT_PATH"
-          
-          echo "✓ Screenshot cropped"
-          ls -la "$SCREENSHOT_PATH"
-        else
-          echo "⚠ Screenshot capture failed - continuing without screenshot"
-        fi
-        
-        # Quit the app
-        osascript -e "tell application \"${REPOSITORY_NAME}\" to quit" 2>/dev/null || true
-      shell: bash
-      continue-on-error: true
-
-
-    # Upload Screenshot Artifact (Mac Only)
-    # ==========================================================================================
-    - name: Upload Screenshot Artifact
-      if: matrix.os == 'macos-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: plugin-screenshot
-        path: web/public/images/screenshot.png
-        if-no-files-found: ignore
+    # Note: Automated screenshot capture not supported on headless CI runners.
+    # To add a screenshot, manually place screenshot.png in web/public/images/
+    # and commit it to the repository.
 
 
     # Production Testing
@@ -1341,17 +1262,6 @@ jobs:
           echo "$key=$value" >> $GITHUB_ENV
         done < <(grep 'set(w' ${GITHUB_WORKSPACE}/config.cmake | sed -e 's/set(//g' -e 's/)//g' -e 's/\s\+/ /g')
       shell: bash
-
-
-    # Download Screenshot Artifact (if build ran)
-    # ==========================================================================================
-    - name: Download Screenshot Artifact
-      if: needs.build.result == 'success'
-      uses: actions/download-artifact@v4
-      with:
-        name: plugin-screenshot
-        path: web/public/images/
-      continue-on-error: true
 
 
     # Setup Node.js

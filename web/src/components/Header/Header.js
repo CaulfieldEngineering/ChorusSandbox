@@ -12,11 +12,11 @@ import styles from './Header.module.css';
  * Displays the plugin name, company attribution, and plugin screenshot
  */
 function Header() {
-  const { pluginName, companyName } = config;
+  const { pluginName, companyName, version } = config;
   const [imageError, setImageError] = useState(false);
   
-  // Screenshot path relative to public folder
-  const screenshotPath = `${process.env.PUBLIC_URL}/images/screenshot.png`;
+  // Screenshot path includes version number: screenshot_x.x.x.png
+  const screenshotPath = `${process.env.PUBLIC_URL}/images/screenshot_${version}.png`;
   
   return (
     <header className={styles.container}>
@@ -27,7 +27,7 @@ function Header() {
         <div className={styles.screenshotWrapper}>
           <img 
             src={screenshotPath}
-            alt={`${pluginName} user interface`}
+            alt={`${pluginName} v${version} user interface`}
             className={styles.screenshot}
             onError={() => setImageError(true)}
           />
