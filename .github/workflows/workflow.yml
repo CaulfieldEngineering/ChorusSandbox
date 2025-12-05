@@ -15,9 +15,61 @@ on:
 
 jobs:
 
+  # Job: Detect Changes
+  # Determines which parts of the codebase changed to enable conditional job execution
+  # ==========================================================================================
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      plugin_changed: ${{ steps.changes.outputs.plugin }}
+      is_tag: ${{ steps.check_tag.outputs.is_tag }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Check if this is a tag
+      id: check_tag
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          echo "is_tag=true" >> $GITHUB_OUTPUT
+        else
+          echo "is_tag=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Detect changed paths
+      id: changes
+      run: |
+        # For tags, always build everything
+        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          echo "plugin=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        
+        # Get changed files
+        CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # Check if ONLY web/ files changed (nothing else)
+        NON_WEB_CHANGES=$(echo "$CHANGED_FILES" | grep -vE '^web/' || true)
+        
+        if [ -z "$NON_WEB_CHANGES" ]; then
+          echo "Only web/ files changed - skipping plugin build"
+          echo "plugin=false" >> $GITHUB_OUTPUT
+        else
+          echo "Non-web files changed - running full build"
+          echo "plugin=true" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+
   # Job: Build
   # ==========================================================================================
   build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.plugin_changed == 'true' || needs.detect-changes.outputs.is_tag == 'true'
     permissions:
       contents: write
 
@@ -1179,10 +1231,12 @@ jobs:
 
 
   # Job: Build & Deploy Web Documentation
-  # Runs AFTER build jobs complete to access version info and installer filenames
+  # Always runs - waits for build if build is running, otherwise runs immediately
   # ==========================================================================================
   deploy-web:
-    needs: build  # Wait for all build matrix jobs to complete
+    needs: [detect-changes, build]
+    # Always run web deploy (if build ran, wait for it; if skipped, proceed)
+    if: always() && (needs.build.result == 'success' || needs.build.result == 'skipped')
     runs-on: ubuntu-latest
     
     steps:
