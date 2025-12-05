@@ -1,10 +1,11 @@
 // ============================================================================
 // CHANGELOG COMPONENT
-// Displays version history with release notes
+// Displays version history with release notes and download links
 // ============================================================================
 
 import React, { useState } from 'react';
 import changelog from '../../config/changelog.json';
+import config from '../../config';
 import styles from './Changelog.module.css';
 
 /**
@@ -32,6 +33,17 @@ const SECTION_ICONS = {
 };
 
 /**
+ * Generate download URL for a specific version
+ */
+function getVersionDownloadUrl(version, platform) {
+  const { downloadBaseUrl, repositoryName } = config;
+  const platformDir = platform === 'mac' ? 'mac' : 'win';
+  const ext = platform === 'mac' ? 'pkg' : 'exe';
+  const platformLabel = platform === 'mac' ? 'Mac' : 'Win';
+  return `${downloadBaseUrl}/${platformDir}/${repositoryName}${platformLabel}Installer_${version}.${ext}`;
+}
+
+/**
  * Format date string for display
  */
 function formatDate(dateStr) {
@@ -55,6 +67,9 @@ function VersionEntry({ version, date, sections, isLatest }) {
     (sum, key) => sum + sections[key].length, 
     0
   );
+
+  const macUrl = getVersionDownloadUrl(version, 'mac');
+  const winUrl = getVersionDownloadUrl(version, 'win');
   
   return (
     <div className={`${styles.version} ${isLatest ? styles.latest : ''}`}>
@@ -76,6 +91,18 @@ function VersionEntry({ version, date, sections, isLatest }) {
       
       {expanded && (
         <div className={styles.versionContent}>
+          {/* Download links for this version */}
+          <div className={styles.versionDownloads}>
+            <span className={styles.downloadLabel}>Download v{version}:</span>
+            <a href={macUrl} className={styles.downloadLink} download>
+              macOS
+            </a>
+            <span className={styles.downloadSeparator}>|</span>
+            <a href={winUrl} className={styles.downloadLink} download>
+              Windows
+            </a>
+          </div>
+          
           {sectionKeys.map(sectionKey => (
             <div key={sectionKey} className={styles.section}>
               <h4 className={styles.sectionTitle}>

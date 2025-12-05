@@ -71,9 +71,10 @@
   border-color: #2196f3;
 }
 
-.icon {
-  font-size: 1.75rem;
-  line-height: 1;
+.iconSvg {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
 }
 
 .label {

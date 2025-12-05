@@ -128,11 +128,40 @@
   }
 }
 
-.section {
+/* Version download links */
+.versionDownloads {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
-.section:first-child {
+.downloadLabel {
+  color: var(--color-text-secondary);
+}
+
+.downloadLink {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.downloadLink:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.downloadSeparator {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.section {
   margin-top: 1rem;
 }
 
