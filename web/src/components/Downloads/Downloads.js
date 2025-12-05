@@ -35,7 +35,7 @@ function Downloads() {
   const winUrl = config.getDownloadUrl('windows');
 
   return (
-    <section className={styles.container}>
+    <section id="download" className={styles.container}>
       <h2 className={styles.title}>Download {pluginName}</h2>
       <p className={styles.version}>Version {version}</p>
       

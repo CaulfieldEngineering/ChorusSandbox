@@ -10,23 +10,27 @@
 
 .app__main {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 2rem;
+  padding-top: 100px; /* Account for fixed nav */
+  padding-bottom: 50vh; /* Allow scrolling to highlight last nav item */
   
-  /* Subtle radial gradient background for depth */
+  /* Subtle gradient background */
   background: 
     radial-gradient(
       ellipse at 50% 0%,
-      rgba(233, 69, 96, 0.15) 0%,
+      rgba(233, 69, 96, 0.08) 0%,
       transparent 50%
     ),
     var(--color-bg-primary);
 }
 
 .app__content {
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
+  margin: 0 auto;
 }
 
+/* Section dividers */
+.app__content > *:not(:first-child) {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

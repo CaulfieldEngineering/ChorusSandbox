@@ -4,44 +4,42 @@
 
 .container {
   text-align: center;
-  padding: 2rem;
+  padding: 4rem 0 2rem;
 }
 
 .title {
   font-family: var(--font-family-display);
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-size: 3rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
-  
-  /* Subtle text shadow for depth */
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 0 40px rgba(233, 69, 96, 0.2);
-  
-  /* Entry animation */
-  animation: fadeInUp 0.8s ease-out;
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: var(--color-text-secondary);
-  animation: fadeInUp 0.8s ease-out 0.1s both;
+  font-weight: 400;
+  margin-bottom: 2.5rem;
 }
 
-/* ============================================================================
-   ANIMATIONS
-   ============================================================================ */
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Screenshot wrapper for shadow and positioning */
+.screenshotWrapper {
+  margin-top: 1rem;
+  padding: 0 1rem;
 }
 
+.screenshot {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  
+  /* Drop shadow */
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  
+  /* Subtle border */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}

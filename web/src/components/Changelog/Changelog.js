@@ -134,7 +134,7 @@ function Changelog() {
   }
   
   return (
-    <section className={styles.container}>
+    <section id="changelog" className={styles.container}>
       <h2 className={styles.title}>Version History</h2>
       
       <div className={styles.versions}>

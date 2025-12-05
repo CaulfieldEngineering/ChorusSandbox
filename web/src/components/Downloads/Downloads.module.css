@@ -4,27 +4,26 @@
 
 .container {
   text-align: center;
-  padding: 2rem;
-  margin-top: 2rem;
+  padding: 3rem 0;
 }
 
 .title {
   font-family: var(--font-family-display);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .version {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -33,16 +32,15 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  border-radius: 6px;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  min-width: 180px;
+  transition: all 0.2s ease;
+  min-width: 160px;
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
 }
 
 .button:active {
@@ -51,30 +49,33 @@
 
 /* macOS button */
 .mac {
-  background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
-  border: 1px solid #444;
+  background: #1a1a1a;
+  border: 1px solid #333;
   color: #fff;
 }
 
 .mac:hover {
-  border-color: #666;
+  background: #222;
+  border-color: #444;
 }
 
 /* Windows button */
 .windows {
-  background: linear-gradient(135deg, #0078d4 0%, #004a8c 100%);
-  border: 1px solid #0078d4;
+  background: #1a1a1a;
+  border: 1px solid #333;
   color: #fff;
 }
 
 .windows:hover {
-  border-color: #2196f3;
+  background: #222;
+  border-color: #444;
 }
 
 .iconSvg {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
+  opacity: 0.9;
 }
 
 .label {
@@ -85,20 +86,20 @@
 }
 
 .platform {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .format {
-  font-size: 0.75rem;
-  opacity: 0.8;
+  font-size: 0.7rem;
+  opacity: 0.5;
 }
 
 /* ============================================================================
    RESPONSIVE
    ============================================================================ */
 
-@media (max-width: 480px) {
+@media (max-width: 400px) {
   .buttons {
     flex-direction: column;
     align-items: center;
@@ -106,7 +107,6 @@
   
   .button {
     width: 100%;
-    max-width: 220px;
+    max-width: 200px;
   }
 }
-

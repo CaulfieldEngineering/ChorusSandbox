@@ -3,8 +3,11 @@
 // ============================================================================
 
 import React, { useEffect } from 'react';
+import Nav from './components/Nav';
 import Header from './components/Header';
 import Downloads from './components/Downloads';
+import Description from './components/Description';
+import Features from './components/Features';
 import Changelog from './components/Changelog';
 import config from './config';
 import './App.css';
@@ -21,10 +24,13 @@ function App() {
 
   return (
     <div className="app">
+      <Nav />
       <main className="app__main">
         <div className="app__content">
           <Header />
           <Downloads />
+          <Description />
+          <Features />
           <Changelog />
         </div>
       </main>
@@ -33,4 +39,3 @@ function App() {
 }
 
 export default App;
-

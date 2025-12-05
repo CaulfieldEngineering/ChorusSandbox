@@ -1,14 +1,14 @@
 {
-  "version": "0.0.0-dev",
-  "pluginName": "ChorusSandbox",
-  "companyName": "Caulfield Engineering",
-  "repositoryName": "ChorusSandbox",
-  "buildDate": "2024-01-01T00:00:00Z",
+  "version": "x.x.x",
+  "pluginName": "PluginTitle",
+  "companyName": "CompanyName",
+  "repositoryName": "RepositoryName",
+  "buildDate": "YYYY-MM-DD",
   "isTaggedRelease": false,
   "installers": {
-    "mac": "ChorusSandboxMacInstaller_0.0.0.pkg",
-    "windows": "ChorusSandboxWinInstaller_0.0.0.exe"
+    "mac": "PluginTitleMacInstaller_x.x.x.pkg",
+    "windows": "PluginTitleWinInstaller_x.x.x.exe"
   },
-  "downloadBaseUrl": "https://caulfieldengineering.com/plug-ins/ChorusSandbox/uploads"
+  "downloadBaseUrl": "https://example.com/uploads"
 }
 

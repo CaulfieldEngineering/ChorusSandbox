@@ -4,13 +4,13 @@
 
 /* CSS Variables for theming */
 :root {
-  --color-bg-primary: #1a1a2e;
-  --color-bg-secondary: #16213e;
+  --color-bg-primary: #0d0d0d;
+  --color-bg-secondary: #161616;
   --color-accent: #e94560;
-  --color-text-primary: #eaeaea;
-  --color-text-secondary: #a0a0a0;
-  --font-family-display: 'Playfair Display', Georgia, serif;
-  --font-family-body: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #888888;
+  --font-family-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Reset & Base Styles */
@@ -26,6 +26,7 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -40,3 +41,8 @@ body {
   min-height: 100vh;
 }
 
+/* Selection */
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
