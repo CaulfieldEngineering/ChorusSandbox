@@ -2,10 +2,11 @@
 // MAIN APPLICATION COMPONENT
 // ============================================================================
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from './components/Header';
 import Downloads from './components/Downloads';
 import Changelog from './components/Changelog';
+import config from './config';
 import './App.css';
 
 /**
@@ -13,6 +14,11 @@ import './App.css';
  * Root component that orchestrates the application layout
  */
 function App() {
+  // Set document title to plugin name
+  useEffect(() => {
+    document.title = `${config.pluginName} - ${config.companyName}`;
+  }, []);
+
   return (
     <div className="app">
       <main className="app__main">
