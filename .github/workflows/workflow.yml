@@ -257,27 +257,53 @@ jobs:
           # Wait for window to appear and render
           Start-Sleep -Seconds 5
           
-          # Use .NET to capture screenshot
+          # Load assemblies
           Add-Type -AssemblyName System.Windows.Forms
           Add-Type -AssemblyName System.Drawing
+          
+          # Define Win32 functions for window capture
+          $win32Code = 'using System; using System.Runtime.InteropServices; public class Win32 { [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect); [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd); [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect); [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint); [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; } [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X, Y; } }'
+          Add-Type -TypeDefinition $win32Code -Language CSharp
           
           try {
             $proc = Get-Process -Id $process.Id -ErrorAction SilentlyContinue
             if ($proc -and $proc.MainWindowHandle -ne 0) {
-              Write-Host "Found window handle: $($proc.MainWindowHandle)"
+              $hwnd = $proc.MainWindowHandle
+              Write-Host "Found window handle: $hwnd"
               
-              # Capture entire screen
-              $screen = [System.Windows.Forms.Screen]::PrimaryScreen
-              $bitmap = New-Object System.Drawing.Bitmap($screen.Bounds.Width, $screen.Bounds.Height)
-              $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-              $graphics.CopyFromScreen($screen.Bounds.Location, [System.Drawing.Point]::Empty, $screen.Bounds.Size)
+              # Bring window to foreground
+              [Win32]::SetForegroundWindow($hwnd) | Out-Null
+              Start-Sleep -Milliseconds 500
               
-              # Save full screenshot
-              $bitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
-              Write-Host "Screenshot saved to: $screenshotPath"
+              # Get client area (without title bar)
+              $clientRect = New-Object Win32+RECT
+              [Win32]::GetClientRect($hwnd, [ref]$clientRect) | Out-Null
               
-              $graphics.Dispose()
-              $bitmap.Dispose()
+              $point = New-Object Win32+POINT
+              $point.X = 0
+              $point.Y = 0
+              [Win32]::ClientToScreen($hwnd, [ref]$point) | Out-Null
+              
+              $width = $clientRect.Right - $clientRect.Left
+              $height = $clientRect.Bottom - $clientRect.Top
+              
+              Write-Host "Client area: ${width}x${height} at ($($point.X), $($point.Y))"
+              
+              if ($width -gt 0 -and $height -gt 0) {
+                # Capture just the client area
+                $bitmap = New-Object System.Drawing.Bitmap($width, $height)
+                $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+                $graphics.CopyFromScreen($point.X, $point.Y, 0, 0, (New-Object System.Drawing.Size($width, $height)))
+                
+                # Save screenshot
+                $bitmap.Save($screenshotPath, [System.Drawing.Imaging.ImageFormat]::Png)
+                Write-Host "Screenshot saved to: $screenshotPath"
+                
+                $graphics.Dispose()
+                $bitmap.Dispose()
+              } else {
+                Write-Host "Invalid window dimensions"
+              }
             } else {
               Write-Host "Window handle not found"
             }
