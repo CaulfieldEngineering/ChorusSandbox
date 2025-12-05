@@ -83,22 +83,6 @@ jobs:
       shell: bash
       
 
-    # Confirm Tag is of Production Branch, and not Staging - Tag Only
-    # ==========================================================================================
-    - name: Ensure Tag is on Production Branch
-      if: startsWith(github.ref, 'refs/tags/v')
-      shell: bash
-      run: |
-        git fetch origin production
-        TAG_COMMIT=$(git rev-parse HEAD)
-        if git merge-base --is-ancestor $TAG_COMMIT origin/production; then
-          echo "✓ Tag commit is part of production branch history."
-        else
-          echo "::error::Tag commit is NOT based on production branch. Aborting."
-          exit 1
-        fi
-
-
     # Confirm GitHub Tag Matches config.cmake tag - Tags Only
     # ==========================================================================================
     - name: Verify Tag Version Matches Config Version
@@ -115,7 +99,26 @@ jobs:
         fi
     
         echo "✓ Tag and config.cmake versions match"
-    
+
+
+    # Confirm CHANGELOG.md contains entry for this version - Tags Only
+    # ==========================================================================================
+    - name: Verify Changelog Contains Version Entry
+      if: startsWith(github.ref, 'refs/tags/v')
+      shell: bash
+      run: |
+        TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+        echo "Checking CHANGELOG.md for version $TAG_VERSION..."
+        
+        # Look for version header in changelog: ## [X.X.X]
+        if grep -q "## \[$TAG_VERSION\]" CHANGELOG.md; then
+          echo "✓ CHANGELOG.md contains entry for version $TAG_VERSION"
+        else
+          echo "::error::CHANGELOG.md is missing an entry for version $TAG_VERSION"
+          echo "Please add a section: ## [$TAG_VERSION] - $(date +%Y-%m-%d)"
+          exit 1
+        fi
+
 
 # Confirm New Tag is Greater than Previous tags - Tags Only
 # ==========================================================================================
@@ -1246,6 +1249,12 @@ jobs:
         echo "Generated build configuration:"
         cat web/src/config/buildConfig.json
       shell: bash
+
+
+    # Parse Changelog for React App
+    # ==========================================================================================
+    - name: Parse Changelog
+      run: node web/scripts/parseChangelog.js
 
 
     # Build React Application

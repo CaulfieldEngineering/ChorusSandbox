@@ -13,14 +13,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
   
   /* Subtle radial gradient background for depth */
   background: 
     radial-gradient(
       ellipse at 50% 0%,
-      rgba(234, 69, 96, 0.15) 0%,
+      rgba(233, 69, 96, 0.15) 0%,
       transparent 50%
     ),
     var(--color-bg-primary);
+}
+
+.app__content {
+  max-width: 600px;
+  width: 100%;
 }
 

@@ -1,7 +1,7 @@
 // ============================================================================
-// HELLO WORLD COMPONENT INDEX
+// HEADER COMPONENT INDEX
 // Barrel export for cleaner imports
 // ============================================================================
 
-export { default } from './HelloWorld';
+export { default } from './Header';
 

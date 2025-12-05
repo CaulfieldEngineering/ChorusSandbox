@@ -1,0 +1,192 @@
+/* ============================================================================
+   CHANGELOG COMPONENT STYLES
+   ============================================================================ */
+
+.container {
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.title {
+  font-family: var(--font-family-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.versions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ============================================================================
+   VERSION ENTRY
+   ============================================================================ */
+
+.version {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.version:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.version.latest {
+  border-color: rgba(233, 69, 96, 0.3);
+}
+
+.versionHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+.versionHeader:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.versionInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.versionNumber {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.latestBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  background: var(--color-accent);
+  color: #fff;
+  border-radius: 4px;
+}
+
+.versionDate {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.versionMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.changeCount {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.expandIcon {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  width: 1.5rem;
+  text-align: center;
+}
+
+/* ============================================================================
+   VERSION CONTENT
+   ============================================================================ */
+
+.versionContent {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 0;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section {
+  margin-top: 1rem;
+}
+
+.section:first-child {
+  margin-top: 1rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.sectionIcon {
+  color: var(--color-accent);
+}
+
+.changeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.changeItem {
+  position: relative;
+  padding: 0.35rem 0 0.35rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+.changeItem::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .versionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .versionMeta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
