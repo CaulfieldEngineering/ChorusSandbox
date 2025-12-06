@@ -1533,7 +1533,7 @@ jobs:
         fi
 
         echo "Verifying build directory exists..."
-        if [ -d "${GITHUB_WORKSPACE}/web/build" ]; then
+        if [ -d "${GITHUB_WORKSPACE}/web/web-template/build" ]; then
           echo "✓ Build directory exists"
         else
           echo "ERROR: Build directory does not exist"
@@ -1542,11 +1542,11 @@ jobs:
         fi
 
         echo "Beginning SCP Transfer..."
-        echo "Source: ${GITHUB_WORKSPACE}/web/build/"
+        echo "Source: ${GITHUB_WORKSPACE}/web/web-template/build/"
         echo "Destination: $SERVER:$DEST_PATH"
 
         # Upload all build contents recursively
-        if scp -r ${GITHUB_WORKSPACE}/web/build/* "$SERVER:$DEST_PATH"; then
+        if scp -r ${GITHUB_WORKSPACE}/web/web-template/build/* "$SERVER:$DEST_PATH"; then
           echo "✓ SCP transfer completed successfully"
         else
           echo "ERROR: SCP transfer failed with exit code $?"
