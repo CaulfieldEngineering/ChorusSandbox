@@ -1386,8 +1386,20 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: plugin-screenshot
-        path: web/public/screenshots/
+        path: web/web-template/public/screenshots/
       continue-on-error: true
+
+    # If screenshots were downloaded, also mirror them into assets for reuse
+    - name: Sync Screenshots to Assets
+      shell: bash
+      run: |
+        mkdir -p web/web-template/assets/screenshots
+        if compgen -G "web/web-template/public/screenshots/*" > /dev/null; then
+          cp -f web/web-template/public/screenshots/* web/web-template/assets/screenshots/
+          echo "Screenshots synced to web/web-template/assets/screenshots"
+        else
+          echo "No screenshots to sync"
+        fi
 
 
     # Setup Node.js
@@ -1401,7 +1413,7 @@ jobs:
     # Install Dependencies
     # ==========================================================================================
     - name: Install Dependencies
-      working-directory: web
+      working-directory: web/web-template
       run: npm install
 
 
@@ -1414,8 +1426,8 @@ jobs:
       run: |
         REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}')
         
-        # Create a config file that React can import
-        cat > web/src/config/buildConfig.json << EOF
+        # Create a config file that React can import (template lives in web/web-template)
+        cat > web/web-template/src/config/buildConfig.json << EOF
         {
           "version": "${wPROJECT_VERSION}",
           "pluginName": "${wPLUGIN_NAME}",
@@ -1432,20 +1444,21 @@ jobs:
         EOF
         
         echo "Generated build configuration:"
-        cat web/src/config/buildConfig.json
+        cat web/web-template/src/config/buildConfig.json
       shell: bash
 
 
     # Parse Changelog for React App
     # ==========================================================================================
-    - name: Parse Changelog
-      run: node web/scripts/parseChangelog.js
+    - name: Ingest Content (markdown + changelog)
+      working-directory: web/web-template
+      run: npm run ingest
 
 
     # Build React Application
     # ==========================================================================================
     - name: Build React Application
-      working-directory: web
+      working-directory: web/web-template
       run: npm run build
 
 
@@ -1455,7 +1468,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: web-build
-        path: web/build/
+        path: web/web-template/build/
 
 
     # Check SSH Credentials Available

@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2025-12-06T17:35:57.769Z",
+  "overview": {
+    "title": "Overview",
+    "description": "A lush, multi-voice chorus effect designed for modern music production. ChorusSandbox delivers rich, animated textures with precise stereo control and built-in filtering for seamless integration into any mix."
+  },
+  "features": [
+    {
+      "title": "Multi-Voice Engine",
+      "description": "Up to 10 independent chorus voices with individual attenuation control"
+    },
+    {
+      "title": "Stereo Processing",
+      "description": "Mono, Stereo, and Mid-Side modes with adjustable stereo spread"
+    },
+    {
+      "title": "Built-in Filtering",
+      "description": "High-pass and low-pass filters to shape the wet signal"
+    },
+    {
+      "title": "Precise Control",
+      "description": "Fine-tune rate, depth, and base delay for the perfect chorus sound"
+    }
+  ]
+}
