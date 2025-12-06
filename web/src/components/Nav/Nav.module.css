@@ -13,10 +13,10 @@
 }
 
 .nav.scrolled {
-  background: rgba(26, 26, 46, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(15, 15, 18, 0.95);
+  backdrop-filter: blur(12px);
   padding: 0.75rem 0;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .container {
@@ -30,7 +30,7 @@
 
 .logo {
   font-family: var(--font-family-display);
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--color-text-primary);
   text-decoration: none;
@@ -38,7 +38,7 @@
 }
 
 .logo:hover {
-  color: var(--color-accent);
+  color: var(--color-tint-purple);
 }
 
 .links {
@@ -50,7 +50,7 @@
 }
 
 .link {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 500;
   color: var(--color-text-secondary);
   text-decoration: none;
@@ -58,8 +58,16 @@
   position: relative;
 }
 
+/* Separator between plug-ins link and page nav */
+.separator {
+  color: var(--color-text-muted);
+  font-weight: 300;
+  opacity: 0.4;
+  user-select: none;
+}
+
 .link:hover {
-  color: var(--color-text-primary);
+  color: var(--color-tint-cyan);
 }
 
 .link.active {
@@ -73,7 +81,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--color-accent);
+  background: var(--color-tint-green);
   border-radius: 1px;
 }
 

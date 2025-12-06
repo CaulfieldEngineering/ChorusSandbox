@@ -58,24 +58,28 @@ function formatDate(dateStr) {
 
 /**
  * Version Screenshot Component
- * Displays a thumbnail with lightbox support
+ * Displays a thumbnail with lightbox support, or placeholder if missing
  */
 function VersionScreenshot({ version, onOpenLightbox }) {
   const [imageError, setImageError] = useState(false);
   const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png?v=${Date.now()}`;
   
-  if (imageError) return null;
-  
   return (
     <div className={styles.versionScreenshot}>
-      <img 
-        src={screenshotPath}
-        alt={`Version ${version} screenshot - click to enlarge`}
-        className={styles.versionScreenshotImg}
-        onError={() => setImageError(true)}
-        onClick={() => onOpenLightbox(screenshotPath, version)}
-        title="Click to view full size"
-      />
+      {imageError ? (
+        <div className={styles.versionScreenshotPlaceholder}>
+          Screenshot v{version}
+        </div>
+      ) : (
+        <img 
+          src={screenshotPath}
+          alt={`Version ${version} screenshot - click to enlarge`}
+          className={styles.versionScreenshotImg}
+          onError={() => setImageError(true)}
+          onClick={() => onOpenLightbox(screenshotPath, version)}
+          title="Click to view full size"
+        />
+      )}
     </div>
   );
 }

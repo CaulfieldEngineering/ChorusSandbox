@@ -17,11 +17,26 @@
   padding-top: 100px; /* Account for fixed nav */
   padding-bottom: 50vh; /* Allow scrolling to highlight last nav item */
   
-  /* Subtle gradient background */
+  /* Subtle gradient background - hints of blue, green, purple */
   background: 
     radial-gradient(
-      ellipse at 50% 0%,
-      rgba(233, 69, 96, 0.08) 0%,
+      ellipse 120% 80% at 15% 5%,
+      rgba(85, 136, 187, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 100% 70% at 85% 25%,
+      rgba(136, 102, 170, 0.10) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 90% 60% at 25% 75%,
+      rgba(85, 170, 136, 0.055) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 75% 95%,
+      rgba(85, 170, 170, 0.08) 0%,
       transparent 50%
     ),
     var(--color-bg-primary);
@@ -35,7 +50,7 @@
 
 /* Section dividers */
 .app__content > *:not(:first-child) {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* ============================================================================

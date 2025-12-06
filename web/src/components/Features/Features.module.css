@@ -25,12 +25,27 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  transition: border-color 0.2s ease;
+  border-left: 3px solid var(--color-tint-blue);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.feature:nth-child(2) {
+  border-left-color: var(--color-tint-purple);
+}
+
+.feature:nth-child(3) {
+  border-left-color: var(--color-tint-green);
+}
+
+.feature:nth-child(4) {
+  border-left-color: var(--color-tint-cyan);
 }
 
 .feature:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  transform: translateX(4px);
 }
 
 .featureTitle {

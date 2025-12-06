@@ -73,6 +73,17 @@ function Nav() {
         </a>
         
         <ul className={styles.links}>
+          {/* External link to parent plug-ins directory */}
+          <li>
+            <a href="/plug-ins/" className={styles.link}>
+              Plug-Ins
+            </a>
+          </li>
+          
+          {/* Separator */}
+          <li className={styles.separator} aria-hidden="true">|</li>
+          
+          {/* Page section links */}
           {NAV_ITEMS.map(item => (
             <li key={item.id}>
               <a
