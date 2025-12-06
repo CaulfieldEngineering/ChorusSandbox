@@ -62,7 +62,8 @@ function formatDate(dateStr) {
  */
 function VersionScreenshot({ version }) {
   const [imageError, setImageError] = useState(false);
-  const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png`;
+  // Cache-busting parameter to prevent stale images
+  const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png?v=${Date.now()}`;
   
   if (imageError) return null;
   

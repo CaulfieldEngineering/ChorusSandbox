@@ -1,0 +1,2 @@
+1. For the web folder, separate out "templatized" data and product-specific data/content into separate folders for ease of updating template.
+2. Modularize content sections for ease of updating content.
