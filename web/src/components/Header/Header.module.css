@@ -4,7 +4,8 @@
 
 .container {
   text-align: center;
-  padding: 4rem 0 2rem;
+  padding: 4rem 0 4.5rem; /* Extra bottom space to clear reflection */
+  margin-bottom: 2rem; /* Ensure following sections sit below glow */
 }
 
 .title {
@@ -48,7 +49,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 4.25rem; /* Space for compact reflection and ground glow */
+  padding-bottom: 3.25rem; /* Space for very compact reflection and glow */
 }
 
 /* Main screenshot - 3D floating effect by default */
@@ -74,14 +75,14 @@
     0 6px 14px rgba(180, 180, 180, 0.35),
     0 1px 0 rgba(255, 255, 255, 0.25);
 
-  /* Compact mirrored reflection for low rear light (WebKit/Blink) */
-  -webkit-box-reflect: below 12px
+  /* Ultra-short mirrored reflection for low rear light (WebKit/Blink) */
+  -webkit-box-reflect: below 8px
     linear-gradient(
       180deg,
       transparent 0%,
-      rgba(190, 205, 220, 0.20) 12%,
-      rgba(40, 55, 75, 0.10) 26%,
-      transparent 42%
+      rgba(190, 205, 220, 0.18) 8%,
+      rgba(40, 55, 75, 0.08) 14%,
+      transparent 20%
     );
   
   transition: transform 0.3s ease;
@@ -94,11 +95,11 @@
 /* Ground shadow - rectangular, softened reflection */
 .groundShadow {
   position: absolute;
-  bottom: -35px;
+  bottom: -26px;
   left: 50%;
   transform: translateX(-50%);
-  width: 105%;
-  height: 40px;
+  width: 100%;
+  height: 26px;
   pointer-events: none;
   z-index: 1;
   
@@ -109,7 +110,7 @@
     rgba(40, 60, 80, 0.2) 35%,
     rgba(0, 0, 0, 0) 72%
   );
-  filter: blur(16px);
+  filter: blur(12px);
   opacity: 0.95;
 }
 
@@ -202,7 +203,8 @@
 
 @media (max-width: 480px) {
   .container {
-    padding: 2rem 0 1rem;
+    padding: 2rem 0 3rem;
+    margin-bottom: 1.5rem;
   }
   
   .title {
@@ -224,10 +226,10 @@
   }
   
   .groundShadow {
-    bottom: -18px;
-    width: 108%;
-    height: 32px;
-    filter: blur(12px);
+    bottom: -14px;
+    width: 104%;
+    height: 20px;
+    filter: blur(10px);
   }
   
   .placeholder {
