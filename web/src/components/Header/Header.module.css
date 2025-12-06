@@ -26,7 +26,7 @@
 /* Screenshot wrapper - creates the 3D stage with visible floor */
 .screenshotWrapper {
   margin-top: 2rem;
-  padding: 2rem 1rem 4.5rem;
+  padding: 2rem 1rem 4rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -48,7 +48,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 5.5rem; /* Space for reflection and ground glow */
+  padding-bottom: 4.25rem; /* Space for compact reflection and ground glow */
 }
 
 /* Main screenshot - 3D floating effect by default */
@@ -74,14 +74,14 @@
     0 6px 14px rgba(180, 180, 180, 0.35),
     0 1px 0 rgba(255, 255, 255, 0.25);
 
-  /* Soft mirrored reflection fading downward (WebKit/Blink) */
-  -webkit-box-reflect: below 18px
+  /* Compact mirrored reflection for low rear light (WebKit/Blink) */
+  -webkit-box-reflect: below 12px
     linear-gradient(
       180deg,
       transparent 0%,
-      rgba(190, 205, 220, 0.24) 32%,
-      rgba(40, 55, 75, 0.10) 58%,
-      transparent 82%
+      rgba(190, 205, 220, 0.20) 12%,
+      rgba(40, 55, 75, 0.10) 26%,
+      transparent 42%
     );
   
   transition: transform 0.3s ease;
@@ -97,8 +97,8 @@
   bottom: -35px;
   left: 50%;
   transform: translateX(-50%);
-  width: 120%;
-  height: 80px;
+  width: 105%;
+  height: 40px;
   pointer-events: none;
   z-index: 1;
   
@@ -109,7 +109,7 @@
     rgba(40, 60, 80, 0.2) 35%,
     rgba(0, 0, 0, 0) 72%
   );
-  filter: blur(24px);
+  filter: blur(16px);
   opacity: 0.95;
 }
 
@@ -224,10 +224,10 @@
   }
   
   .groundShadow {
-    bottom: -22px;
-    width: 115%;
-    height: 50px;
-    filter: blur(18px);
+    bottom: -18px;
+    width: 108%;
+    height: 32px;
+    filter: blur(12px);
   }
   
   .placeholder {
