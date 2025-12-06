@@ -293,8 +293,8 @@ jobs:
                 
                 $graphics.ReleaseHdc($hdc)
                 
-                # Crop out title bar (approximately 31 pixels on Windows 10/11)
-                $titleBarHeight = 31
+                # Crop out title bar (31px) + JUCE audio warning bar (25px) = 56px total
+                $titleBarHeight = 56
                 $croppedHeight = $height - $titleBarHeight
                 $croppedBitmap = New-Object System.Drawing.Bitmap($width, $croppedHeight)
                 $croppedGraphics = [System.Drawing.Graphics]::FromImage($croppedBitmap)

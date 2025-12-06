@@ -25,52 +25,112 @@
 
 /* Screenshot wrapper for shadow, positioning, and reflection */
 .screenshotWrapper {
-  margin-top: 1rem;
-  padding: 0 1rem;
+  margin-top: 1.5rem;
+  padding: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Container for image and reflection */
 .imageContainer {
   position: relative;
-  display: inline-block;
-  width: 100%;
-  padding-bottom: 3rem; /* Space for reflection */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 2rem; /* Space for reflection */
 }
 
 .screenshot {
   max-width: 100%;
+  max-height: 400px; /* Constrain height */
+  width: auto;
   height: auto;
   border-radius: 8px;
   display: block;
   position: relative;
   z-index: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   
-  /* Enhanced drop shadow */
+  /* Enhanced drop shadow for 3D effect */
   box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.4),
-    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.05);
   
   /* Subtle border */
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Reflection image */
+.screenshot:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Reflection image - subtle, short */
 .reflection {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleY(-1);
   top: 100%;
   max-width: 100%;
+  max-height: 60px; /* Short reflection */
+  width: auto;
   height: auto;
-  transform: scaleY(-1);
-  opacity: 0.12;
-  filter: blur(3px);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 60%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 60%);
+  opacity: 0.08;
+  filter: blur(2px);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
   pointer-events: none;
   border-radius: 8px;
+}
+
+/* Lightbox overlay */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+  padding: 2rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightboxImage {
+  max-width: 95%;
+  max-height: 95vh;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.lightboxClose:hover {
+  color: white;
 }
 
 /* Placeholder for when screenshot is missing */
