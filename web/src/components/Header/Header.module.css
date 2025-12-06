@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 /* Container for image and ground shadow */
@@ -40,59 +40,75 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 2.5rem; /* Space for ground shadow */
+  padding-bottom: 3.5rem; /* Space for ground shadow */
 }
 
-/* Main screenshot - elevated 3D effect, rectangular */
+/* Main screenshot - elevated 3D floating effect */
 .screenshot {
   max-width: 100%;
-  max-height: 500px;
+  max-height: 600px;
   width: auto;
   height: auto;
   display: block;
   position: relative;
   z-index: 2;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   /* Sharp rectangular edges */
   border-radius: 0;
   
-  /* Elevated 3D effect - shadow underneath */
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 8px 16px rgba(0, 0, 0, 0.3),
-    0 16px 32px rgba(0, 0, 0, 0.25);
-  
   /* Subtle border for definition */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  
+  /* Floating elevation effect - multi-layer shadows */
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(0, 0, 0, 0.15),
+    0 32px 64px rgba(0, 0, 0, 0.2);
+  
+  /* Smooth transitions */
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .screenshot:hover {
-  transform: translateY(-4px) scale(1.01);
+  transform: translateY(-12px) scale(1.02);
   box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.2),
-    0 12px 24px rgba(0, 0, 0, 0.35),
-    0 24px 48px rgba(0, 0, 0, 0.3);
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 16px 32px rgba(0, 0, 0, 0.15),
+    0 32px 64px rgba(0, 0, 0, 0.2),
+    0 48px 96px rgba(0, 0, 0, 0.25);
 }
 
-/* Ground shadow - 2D projection on floor */
+/* Ground shadow - projected onto the "floor" */
 .groundShadow {
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 30px;
+  transform: translateX(-50%) scaleY(0.4);
+  width: calc(100% - 20px);
+  height: 60px;
   background: radial-gradient(
-    ellipse 100% 100% at 50% 0%,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(0, 0, 0, 0.15) 40%,
-    transparent 70%
+    ellipse 50% 50% at 50% 50%,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.1) 60%,
+    transparent 100%
   );
-  filter: blur(8px);
+  filter: blur(16px);
   pointer-events: none;
   z-index: 1;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.4s ease;
+}
+
+/* When hovering, shadow spreads and softens (image rises) */
+.imageContainer:hover .groundShadow {
+  transform: translateX(-50%) scaleY(0.35) scaleX(1.05);
+  opacity: 0.7;
 }
 
 /* Lightbox overlay */
