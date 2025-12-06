@@ -17,7 +17,10 @@
   padding-top: 100px; /* Account for fixed nav */
   padding-bottom: 50vh; /* Allow scrolling to highlight last nav item */
   
-  /* Subtle gradient background - hints of blue, green, purple */
+  /* DEBUG: White background to see shadows */
+  background: #ffffff;
+  
+  /* ORIGINAL - Subtle gradient background - hints of blue, green, purple
   background: 
     radial-gradient(
       ellipse 120% 80% at 15% 5%,
@@ -40,6 +43,7 @@
       transparent 50%
     ),
     var(--color-bg-primary);
+  */
 }
 
 .app__content {
