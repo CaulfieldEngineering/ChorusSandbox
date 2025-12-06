@@ -50,7 +50,7 @@
   padding-bottom: 3rem; /* Space for ground shadow */
 }
 
-/* Main screenshot - elevated 3D floating effect */
+/* Main screenshot - 3D floating effect by default */
 .screenshot {
   max-width: 100%;
   max-height: 600px;
@@ -64,67 +64,46 @@
   /* Sharp rectangular edges */
   border-radius: 0;
   
-  /* Subtle border for definition */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Bright edge to create "lifted" appearance */
+  border: 1px solid rgba(255, 255, 255, 0.12);
   
-  /* Resting state - elevated */
+  /* Deep multi-layer shadow - creates 3D floating effect */
   box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.4),
-    0 8px 20px rgba(0, 0, 0, 0.35),
-    0 20px 40px rgba(0, 0, 0, 0.25);
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 50px 100px rgba(0, 0, 0, 0.3),
+    0 80px 160px rgba(0, 0, 0, 0.2),
+    /* Subtle ambient glow */
+    0 0 60px rgba(85, 136, 187, 0.08),
+    0 0 100px rgba(136, 102, 170, 0.05);
   
-  /* Smooth transitions */
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .screenshot:hover {
-  transform: translateY(-24px) scale(1.03);
-  border-color: rgba(255, 255, 255, 0.18);
-  
-  /* Dramatic pop-off-the-page shadow */
-  box-shadow: 
-    0 14px 28px rgba(0, 0, 0, 0.5),
-    0 28px 56px rgba(0, 0, 0, 0.4),
-    0 56px 100px rgba(0, 0, 0, 0.3),
-    0 80px 140px rgba(0, 0, 0, 0.2),
-    /* Subtle colored ambient glow */
-    0 0 80px rgba(85, 136, 187, 0.12),
-    0 0 120px rgba(136, 102, 170, 0.08);
+  transform: translateY(-6px) scale(1.01);
 }
 
-/* Ground shadow - ellipse on the "floor" */
+/* Ground reflection/shadow - always visible */
 .groundShadow {
   position: absolute;
-  bottom: -5px;
+  bottom: -35px;
   left: 50%;
   transform: translateX(-50%);
-  width: 85%;
-  height: 60px;
+  width: 92%;
+  height: 100px;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.8;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   
-  /* Dark elliptical shadow */
+  /* Dark elliptical shadow on the ground */
   background: radial-gradient(
-    ellipse 50% 35% at 50% 50%,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.5) 25%,
-    rgba(0, 0, 0, 0.2) 50%,
-    transparent 80%
+    ellipse 55% 45% at 50% 20%,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.45) 30%,
+    rgba(0, 0, 0, 0.15) 60%,
+    transparent 100%
   );
-  filter: blur(18px);
-}
-
-/* When hovering, shadow drops down, spreads, and softens */
-.imageContainer:hover .groundShadow {
-  bottom: -30px;
-  width: 95%;
-  height: 80px;
-  opacity: 0.55;
-  filter: blur(28px);
+  filter: blur(25px);
 }
 
 /* Lightbox overlay */
