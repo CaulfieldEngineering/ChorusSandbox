@@ -55,14 +55,8 @@ function Header() {
               onClick={() => setLightboxOpen(true)}
               title="Click to view full size"
             />
-            {/* Reflection */}
-            <img 
-              src={screenshotPath}
-              alt=""
-              className={styles.reflection}
-              aria-hidden="true"
-              onError={(e) => e.target.style.display = 'none'}
-            />
+            {/* Ground shadow - 2D projection effect */}
+            <div className={styles.groundShadow} aria-hidden="true" />
           </div>
         )}
       </div>

@@ -3,7 +3,7 @@
 // Displays version history with release notes and download links
 // ============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import changelog from '../../config/changelog.json';
 import config from '../../config';
 import styles from './Changelog.module.css';
@@ -58,11 +58,10 @@ function formatDate(dateStr) {
 
 /**
  * Version Screenshot Component
- * Displays a smaller screenshot for the version, hidden if image doesn't exist
+ * Displays a thumbnail with lightbox support
  */
-function VersionScreenshot({ version }) {
+function VersionScreenshot({ version, onOpenLightbox }) {
   const [imageError, setImageError] = useState(false);
-  // Cache-busting parameter to prevent stale images
   const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png?v=${Date.now()}`;
   
   if (imageError) return null;
@@ -71,9 +70,11 @@ function VersionScreenshot({ version }) {
     <div className={styles.versionScreenshot}>
       <img 
         src={screenshotPath}
-        alt={`Version ${version} screenshot`}
+        alt={`Version ${version} screenshot - click to enlarge`}
         className={styles.versionScreenshotImg}
         onError={() => setImageError(true)}
+        onClick={() => onOpenLightbox(screenshotPath, version)}
+        title="Click to view full size"
       />
     </div>
   );
@@ -82,7 +83,7 @@ function VersionScreenshot({ version }) {
 /**
  * Single version entry component
  */
-function VersionEntry({ version, date, sections, isLatest }) {
+function VersionEntry({ version, date, sections, isLatest, onOpenLightbox }) {
   const [expanded, setExpanded] = useState(isLatest);
   
   const sectionKeys = Object.keys(sections);
@@ -115,7 +116,7 @@ function VersionEntry({ version, date, sections, isLatest }) {
       {expanded && (
         <div className={styles.versionContent}>
           {/* Screenshot for this version */}
-          <VersionScreenshot version={version} />
+          <VersionScreenshot version={version} onOpenLightbox={onOpenLightbox} />
           
           {/* Download links for this version */}
           <div className={styles.versionDownloads}>
@@ -150,10 +151,34 @@ function VersionEntry({ version, date, sections, isLatest }) {
 
 /**
  * Changelog Component
- * Renders the full version history
+ * Renders the full version history with lightbox support
  */
 function Changelog() {
   const { versions } = changelog;
+  const [lightbox, setLightbox] = useState({ open: false, src: '', version: '' });
+  
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setLightbox({ open: false, src: '', version: '' });
+    };
+    if (lightbox.open) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [lightbox.open]);
+  
+  const openLightbox = (src, version) => {
+    setLightbox({ open: true, src, version });
+  };
+  
+  const closeLightbox = () => {
+    setLightbox({ open: false, src: '', version: '' });
+  };
   
   if (!versions || versions.length === 0) {
     return null;
@@ -171,9 +196,23 @@ function Changelog() {
             date={entry.date}
             sections={entry.sections}
             isLatest={index === 0}
+            onOpenLightbox={openLightbox}
           />
         ))}
       </div>
+      
+      {/* Lightbox modal */}
+      {lightbox.open && (
+        <div className={styles.lightbox} onClick={closeLightbox}>
+          <span className={styles.lightboxClose}>&times;</span>
+          <img 
+            src={lightbox.src}
+            alt={`Version ${lightbox.version} screenshot`}
+            className={styles.lightboxImage}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </section>
   );
 }
