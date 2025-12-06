@@ -32,23 +32,15 @@
   text-align: center;
 }
 
-/* Screenshot wrapper - creates the 3D stage with visible floor */
+/* Screenshot wrapper */
 .screenshotWrapper {
   margin-top: 2rem;
-  padding: 2rem 1rem 2.5rem;
+  padding: 3rem 1rem 4rem;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  perspective: 1200px;
-  overflow: visible; /* Allow reflection/glow to render outside container */
-  
-  /* Subtle gradient "stage" so shadow is visible */
-  background: radial-gradient(
-    ellipse 80% 60% at 50% 70%,
-    rgba(255, 255, 255, 0.03) 0%,
-    transparent 70%
-  );
+  overflow: visible; /* Allow shadow to render outside container */
 }
 
 /* Container for image and ground shadow */
@@ -57,10 +49,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 1rem; /* Minimal spacing now that effects are removed */
 }
 
-/* Main screenshot - 3D floating effect by default */
+/* Main screenshot - thick drop shadow for 3D effect */
 .screenshot {
   max-width: 100%;
   max-height: 600px;
@@ -70,32 +61,53 @@
   position: relative;
   z-index: 2;
   cursor: pointer;
+  margin-bottom: 0;
   
-  /* Sharp rectangular edges to match mockup */
+  /* Sharp rectangular edges - no border radius for square edges */
   border-radius: 0;
   
   /* Bright edge to create "lifted" appearance against dark bg */
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   
-  /* Tight, high-contrast drop shadow for dark background */
+  /* Very tight, sharp drop shadow centered around image - gradient blue/green/purple mix */
   box-shadow:
-    0 14px 30px rgba(12, 12, 12, 0.65),
-    0 6px 14px rgba(180, 180, 180, 0.35),
-    0 1px 0 rgba(255, 255, 255, 0.25);
-
-  box-shadow: none;
-  -webkit-box-reflect: none;
+    0 4px 12px 6px rgba(50, 70, 100, 0.7),
+    0 2px 9px 4px rgba(60, 85, 110, 0.65),
+    0 1px 6px 3px rgba(70, 100, 120, 0.6),
+    0 0px 4px 2px rgba(80, 115, 130, 0.55),
+    0 -1px 2px 1px rgba(90, 130, 140, 0.4);
   
-  transition: transform 0.3s ease; /* Keep mild hover lift only */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .screenshot:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow:
+    0 5px 15px 8px rgba(45, 65, 95, 0.75),
+    0 3px 11px 5px rgba(55, 80, 105, 0.7),
+    0 2px 8px 4px rgba(65, 95, 115, 0.65),
+    0 1px 6px 3px rgba(75, 110, 125, 0.6),
+    0 0px 4px 2px rgba(85, 125, 135, 0.45);
 }
 
-/* Ground shadow - rectangular, softened reflection */
+/* Ground shadow - creates depth beneath the image */
 .groundShadow {
-  display: none;
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(-30px) rotateX(85deg) scaleX(1.2);
+  width: 80%;
+  height: 40px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    transparent 100%
+  );
+  filter: blur(15px);
+  opacity: 0.8;
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Lightbox overlay */

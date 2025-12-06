@@ -1,4 +1,23 @@
 {
-  "generatedAt": "2025-12-06T17:35:57.769Z",
-  "versions": []
+  "generatedAt": "2025-12-06T18:38:14.335Z",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "date": "2025-12-05",
+      "sections": {
+        "added": [
+          "Initial release",
+          "Multi-voice chorus engine with up to 10 voices",
+          "Global controls: rate, depth, mix, base delay",
+          "Voice attenuation and master voice level controls",
+          "Stereo modes: Mono, Stereo, Mid-Side",
+          "Stereo spread control",
+          "Mid/Side enable toggles with side gain adjustment",
+          "High-pass and low-pass filters with enable toggles",
+          "VST3 and Standalone formats",
+          "macOS and Windows support"
+        ]
+      }
+    }
+  ]
 }

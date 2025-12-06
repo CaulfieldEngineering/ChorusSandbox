@@ -3,7 +3,7 @@
 // Displays the plugin name, company branding, and screenshot with lightbox
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import config from '../../config';
 import content from '../../config/content.json';
 import styles from './Header.module.css';
@@ -21,8 +21,22 @@ function Header() {
   // Product overview copy sits directly under the title for quicker context
   const description = content?.overview?.description || '';
   
-  // Screenshot path includes version number with cache-busting
-  const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png?v=${Date.now()}`;
+  // Screenshot paths
+  const screenshotPath = `${process.env.PUBLIC_URL}/screenshots/screenshot_${version}.png`;
+  const placeholderPath = `${process.env.PUBLIC_URL}/screenshots/placeholder.png`;
+  
+  // Track which image we're currently trying to load
+  const currentAttemptRef = useRef('screenshot');
+  const [currentImageSrc, setCurrentImageSrc] = useState(screenshotPath);
+  const errorHandledRef = useRef(false);
+  
+  // Reset image state when version changes
+  useEffect(() => {
+    currentAttemptRef.current = 'screenshot';
+    setCurrentImageSrc(screenshotPath);
+    setImageError(false);
+    errorHandledRef.current = false;
+  }, [version, screenshotPath]);
   
   // Close lightbox on Escape key
   useEffect(() => {
@@ -53,15 +67,35 @@ function Header() {
         ) : (
           <div className={styles.imageContainer}>
             <img 
-              src={screenshotPath}
+              key={currentImageSrc}
+              src={currentImageSrc}
               alt={`${pluginName} v${version} user interface - click to enlarge`}
               className={styles.screenshot}
-              onError={() => setImageError(true)}
+              onError={() => {
+                // Prevent infinite loops - only handle error once per image source
+                if (errorHandledRef.current) return;
+                errorHandledRef.current = true;
+                
+                if (currentAttemptRef.current === 'screenshot') {
+                  // Version screenshot failed, try placeholder
+                  currentAttemptRef.current = 'placeholder';
+                  setCurrentImageSrc(placeholderPath);
+                  errorHandledRef.current = false; // Allow one more attempt for placeholder
+                } else {
+                  // Placeholder also failed
+                  setImageError(true);
+                }
+              }}
+              onLoad={() => {
+                // Reset error state if image loads successfully
+                errorHandledRef.current = false;
+                if (imageError) {
+                  setImageError(false);
+                }
+              }}
               onClick={() => setLightboxOpen(true)}
               title="Click to view full size"
             />
-            {/* Ground shadow - 2D projection effect */}
-            <div className={styles.groundShadow} aria-hidden="true" />
           </div>
         )}
       </div>
@@ -74,7 +108,7 @@ function Header() {
         >
           <span className={styles.lightboxClose}>&times;</span>
           <img 
-            src={screenshotPath}
+            src={currentImageSrc}
             alt={`${pluginName} v${version} user interface`}
             className={styles.lightboxImage}
             onClick={(e) => e.stopPropagation()}

@@ -9,8 +9,8 @@ const path = require('path');
 
 // Paths
 const templateRoot = path.join(__dirname, '..');
-const repoRoot = path.join(templateRoot, '..');
-const contentRoot = path.join(repoRoot, 'web-content');
+const repoRoot = path.join(templateRoot, '..', '..');
+const contentRoot = path.join(templateRoot, '..', 'web-content');
 
 const overviewPath = path.join(contentRoot, 'overview.md');
 const featuresPath = path.join(contentRoot, 'features.md');

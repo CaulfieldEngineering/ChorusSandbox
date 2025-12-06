@@ -8,24 +8,30 @@ plugin/sourceListResult.cmake
 
 # Dependencies
 web/node_modules/
+web/web-template/node_modules/
 
 # Build output
-web/build/
+web/web-template/build/
+
+# Generated content (from ingestContent.js)
+web/web-template/public/screenshots/
+web/web-template/src/config/content.json
+web/web-template/src/config/changelog.json
 
 # Environment files (may contain secrets)
-web/.env
-web/.env.local
-web/.env.development.local
-web/.env.test.local
-web/.env.production.local
+web/web-template/.env
+web/web-template/.env.local
+web/web-template/.env.development.local
+web/web-template/.env.test.local
+web/web-template/.env.production.local
 
 # Testing & coverage
-web/coverage/
+web/web-template/coverage/
 
 # Debug logs
-web/npm-debug.log*
-web/yarn-debug.log*
-web/yarn-error.log*
+web/web-template/npm-debug.log*
+web/web-template/yarn-debug.log*
+web/web-template/yarn-error.log*
 
 # Editor/IDE
 .idea/
