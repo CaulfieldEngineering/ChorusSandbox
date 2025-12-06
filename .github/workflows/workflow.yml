@@ -1380,27 +1380,6 @@ jobs:
       shell: bash
 
 
-    # Download Screenshot Artifact (if available)
-    # ==========================================================================================
-    - name: Download Screenshot Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: plugin-screenshot
-        path: web/web-template/public/screenshots/
-      continue-on-error: true
-
-    # If screenshots were downloaded, also mirror them into assets for reuse
-    - name: Sync Screenshots to Assets
-      shell: bash
-      run: |
-        mkdir -p web/web-template/assets/screenshots
-        if compgen -G "web/web-template/public/screenshots/*" > /dev/null; then
-          cp -f web/web-template/public/screenshots/* web/web-template/assets/screenshots/
-          echo "Screenshots synced to web/web-template/assets/screenshots"
-        else
-          echo "No screenshots to sync"
-        fi
-
 
     # Setup Node.js
     # ==========================================================================================
