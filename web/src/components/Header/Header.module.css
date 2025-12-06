@@ -67,15 +67,17 @@
   /* Bright edge to create "lifted" appearance */
   border: 1px solid rgba(255, 255, 255, 0.12);
   
-  /* Deep multi-layer shadow - creates 3D floating effect */
+  /* Deep multi-layer drop shadow - visible on dark backgrounds */
   box-shadow: 
-    0 10px 20px rgba(0, 0, 0, 0.5),
-    0 25px 50px rgba(0, 0, 0, 0.4),
-    0 50px 100px rgba(0, 0, 0, 0.3),
-    0 80px 160px rgba(0, 0, 0, 0.2),
-    /* Subtle ambient glow */
-    0 0 60px rgba(85, 136, 187, 0.08),
-    0 0 100px rgba(136, 102, 170, 0.05);
+    0 10px 20px rgba(0, 0, 0, 0.8),
+    0 25px 50px rgba(0, 0, 0, 0.7),
+    0 50px 100px rgba(0, 0, 0, 0.6),
+    0 80px 160px rgba(0, 0, 0, 0.5),
+    /* Lighter edge glow for visibility on dark bg */
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    /* Colored ambient glow */
+    0 0 60px rgba(85, 136, 187, 0.12),
+    0 0 100px rgba(136, 102, 170, 0.08);
   
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
